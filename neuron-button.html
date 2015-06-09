@@ -1,0 +1,65 @@
+<polymer-element name="neuron-button" attributes="name toggle label defaultSize">
+	<template>
+		<template repeat="{{value, i in neuronValues}}">
+			<paper-button toggle="{{toggle}}" neuron-id="{{i}}" active?="{{value}}" on-tap="{{actionTapped}}">
+				{{label}} {{i}}
+			</paper-button>
+		</template>
+	</template>
+
+	<script>
+		Polymer({
+
+			toggle: false,
+
+			defaultSize: 1,
+
+			ready: function(){
+				this.neuronValues = new Array(this.defaultSize);
+
+			},
+
+			setNeuron: function(dnId, neuron){
+				this.neuron = neuron;
+
+				if(this.defaultSize !== neuron.size){
+					while(this.neuronValues.length) this.neuronValues.pop();
+
+					for(var i=0;i<neuron.size; i++) this.neuronValues.push(0.0);
+				}
+			},
+
+			actionTapped: function(evt){
+
+				if(!this.neuron) return ;
+
+				var neuronId = parseInt(evt.target.attributes["neuron-id"].value);
+				var active = evt.target.active;
+
+				if(this.toggle){
+					this.send(neuronId, active ? 1 : 0);
+				}else{
+					this.sendEvent(neuronId);
+				}
+			},
+
+			send: function(neuronId, val){
+				this.neuronValues[neuronId] = val;
+				this.neuron.writeAll(this.neuronValues);
+			},
+
+			sendEvent: function(neuronId){
+				var that = this;
+
+				this.neuronValues[neuronId] = 1;
+				this.neuron.writeAll(this.neuronValues);
+
+				setTimeout(function(){
+					that.neuronValues[neuronId] = 0;
+					that.neuron.writeAll(that.neuronValues);
+				}, 500);
+			}
+		});
+
+	</script>
+</polymer-element>
