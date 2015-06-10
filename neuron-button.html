@@ -1,7 +1,7 @@
 <polymer-element name="neuron-button" attributes="name toggle label defaultSize">
 	<template>
-		<template repeat="{{value, i in neuronValues}}">
-			<paper-button toggle="{{toggle}}" neuron-id="{{i}}" active?="{{value}}" on-tap="{{actionTapped}}">
+		<template repeat="{{value, i in buttons}}">
+			<paper-button toggle="{{toggle}}" neuron-id="{{i}}" active?="{{neuronValues[i]}}" on-tap="{{actionTapped}}">
 				{{label}} {{i}}
 			</paper-button>
 		</template>
@@ -15,17 +15,33 @@
 			defaultSize: 1,
 
 			ready: function(){
-				this.neuronValues = new Array(this.defaultSize);
+				this.neuronValues = [];
+				this.buttons = [];
+
+				for(var i = 0; i< this.defaultSize; i++){
+					this.neuronValues.push(0);
+					this.buttons.push(1);
+				}
 
 			},
 
 			setNeuron: function(dnId, neuron){
 				this.neuron = neuron;
 
-				if(this.defaultSize !== neuron.size){
-					while(this.neuronValues.length) this.neuronValues.pop();
+				if(!neuron) return ;
 
-					for(var i=0;i<neuron.size; i++) this.neuronValues.push(0.0);
+				if(this.defaultSize !== neuron.size){
+					while(this.neuronValues.length > neuron.size) this.neuronValues.pop();
+					while(this.buttons.length > neuron.size) this.buttons.pop();
+
+					while(this.neuronValues.length < neuron.size) {
+						this.neuronValues.push(0);
+						this.buttons.push(1);
+					}
+				}
+
+				if(this.toggle){
+					this.sendAll();
 				}
 			},
 
@@ -41,6 +57,10 @@
 				}else{
 					this.sendEvent(neuronId);
 				}
+			},
+
+			sendAll: function(){
+				this.neuron.writeAll(this.neuronValues);
 			},
 
 			send: function(neuronId, val){
