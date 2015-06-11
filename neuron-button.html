@@ -16,7 +16,7 @@
 
 		<template repeat="{{value, i in elems}}">
 			<paper-button toggle="{{toggle}}" neuron-id="{{i}}" active?="{{neuronValues[i]}}" on-tap="{{actionTapped}}">
-				{{label}} {{i}}
+				{{label}} <template if="{{neuronValues.length > 1}}">{{i}}</template>
 			</paper-button>
 		</template>
 
