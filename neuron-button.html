@@ -12,11 +12,16 @@
 				margin: 0px;
 			}
 
+			:host paper-button[disabled]{
+				background: rgba(255,255,255, 0.5);
+				color: gray;
+			}
+
 
 		</style>
 
 		<template repeat="{{value, i in elems}}">
-			<paper-button toggle="{{toggle}}" neuron-id="{{i}}" active?="{{neuronValues[i]}}" on-tap="{{actionTapped}}">
+			<paper-button class="{{state}}" toggle="{{toggle}}" disabled="{{state==='disconnected'}}" neuron-id="{{i}}" active?="{{neuronValues[i]}}" on-tap="{{actionTapped}}">
 				{{label}} <template if="{{neuronValues.length > 1}}">{{i}}</template>
 			</paper-button>
 		</template>
