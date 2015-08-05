@@ -1,8 +1,12 @@
 <link rel="import" href="../neuron-base/neuron-base.html">
+<link rel="import" href="../paper-button/paper-button.html">
 
-<polymer-element name="neuron-button" attributes="toggle label" extends="neuron-base">
-	<template>
-		<style>
+<!--
+    TODO(polyup): Inheriting from other custom elements is not yet supported.
+    See: https://www.polymer-project.org/1.0/docs/migration.html#inheritance
+ -->
+<dom-module id="neuron-button">
+  <style>
 			:host{
 				display: flex;
 			}
@@ -19,39 +23,50 @@
 
 
 		</style>
-
-		<template repeat="{{value, i in elems}}">
-			<paper-button class="{{state}}" toggle="{{toggle}}" disabled="{{state==='disconnected'}}" neuron-id="{{i}}" active?="{{neuronValues[i]}}" on-tap="{{actionTapped}}">
-				{{label}} <template if="{{neuronValues.length > 1}}">{{i}}</template>
+  <template>
+		<template is="dom-repeat" items="{{elems}}" as="value" index-as="i">
+			<paper-button class="{{state}}" toggle="{{toggle}}" disabled="{{computeDisabled(state)}}" neuron-id="{{i}}" active?="{{computeActive(i)}}" on-tap="{{actionTapped}}">
+				<span>{{label}}</span> <template is="dom-if" if="{{computeIf(neuronValues)}}">{{i}}</template>
 			</paper-button>
 		</template>
 
 		<shadow></shadow>
 	</template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'neuron-button',
+        behaviors: [DiyaBehaviors.Neuron],
+        properties: {
+            label: { notify: true },
+            toggle: { type: Boolean, value: false, notify: true },
+        },
 
-	<script>
-		Polymer({
+        ready: function () {
+        },
 
-			toggle: false,
+        actionTapped: function (evt) {
+            if (!this.neuron) return;
 
-			ready: function(){
-				this.super();
-			},
+            var neuronId = parseInt(evt.target.attributes['neuron-id'].value);
+            var active = evt.target.active;
+            if (this.toggle) {
+                this.send(neuronId, active ? 1 : 0);
+            } else {
+                this.sendEvent(neuronId, 1000);
+            }
+        },
 
-			actionTapped: function(evt){
+        computeDisabled: function (state) {
+            return state === 'disconnected';
+        },
 
-				if(!this.neuron) return ;
+        computeActive: function (i) {
+            return this.neuronValues[i] ? true : false;
+        },
 
-				var neuronId = parseInt(evt.target.attributes["neuron-id"].value);
-				var active = evt.target.active;
-
-				if(this.toggle){
-					this.send(neuronId, active ? 1 : 0);
-				}else{
-					this.sendEvent(neuronId);
-				}
-			}
-		});
-
-	</script>
-</polymer-element>
+        computeIf: function (neuronValues) {
+            return neuronValues.length > 1;
+        }
+    });
+</script>
