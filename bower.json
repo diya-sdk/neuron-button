@@ -16,7 +16,6 @@
     "tests"
   ],
   "dependencies": {
-    "paper-button": "PolymerElements/paper-button",
-    "neuron-base": "partnering/neuron-base"
+   "paper-button": "PolymerElements/paper-button"
   }
 }

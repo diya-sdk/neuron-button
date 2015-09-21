@@ -1,10 +1,6 @@
 <link rel="import" href="../neuron-base/neuron-base.html">
 <link rel="import" href="../paper-button/paper-button.html">
 
-<!--
-    TODO(polyup): Inheriting from other custom elements is not yet supported.
-    See: https://www.polymer-project.org/1.0/docs/migration.html#inheritance
- -->
 <dom-module id="neuron-button">
   <style>
 			:host{
@@ -21,52 +17,63 @@
 				color: gray;
 			}
 
+			:host paper-button[toggles]{
+				transition: background-color 0.3s;
+			}
+
+			:host paper-button[toggles][active]{
+				background-color: rgba(0,0,0,0.25);
+			}
+
 
 		</style>
   <template>
-		<template is="dom-repeat" items="{{elems}}" as="value" index-as="i">
-			<paper-button class="{{state}}" toggle="{{toggle}}" disabled="{{computeDisabled(state)}}" neuron-id="{{i}}" active?="{{computeActive(i)}}" on-tap="{{actionTapped}}">
-				<span>{{label}}</span> <template is="dom-if" if="{{computeIf(neuronValues)}}">{{i}}</template>
-			</paper-button>
+		<template is="dom-repeat" items="{{neuronValues}}" as="value" index-as="i">
+			<paper-button class="{{state}}" toggles="{{toggle}}" disabled="{{computeDisabled(state)}}" neuron-id="{{i}}" active?="{{computeActive(i)}}" on-tap="actionTapped">{{computeLabel(i)}}</paper-button>
 		</template>
 
 		<shadow></shadow>
 	</template>
 </dom-module>
 <script>
-    Polymer({
-        is: 'neuron-button',
-        behaviors: [DiyaBehaviors.Neuron],
-        properties: {
-            label: { notify: true },
-            toggle: { type: Boolean, value: false, notify: true },
-        },
+	Polymer({
+		is: 'neuron-button',
+		behaviors: [DiyaBehaviors.Neuron],
+		properties: {
+			label: { notify: true },
+			toggle: { type: Boolean, value: false, notify: true },
+		},
+		
+		ready: function () {
+		},
 
-        ready: function () {
-        },
+		actionTapped: function (evt) {
+			if (!this.neuron) return;
 
-        actionTapped: function (evt) {
-            if (!this.neuron) return;
+			var i = 0;
+			while(evt.path[i].nodeName !== 'PAPER-BUTTON') i++;
+			var btn = evt.path[i];
 
-            var neuronId = parseInt(evt.target.attributes['neuron-id'].value);
-            var active = evt.target.active;
-            if (this.toggle) {
-                this.send(neuronId, active ? 1 : 0);
-            } else {
-                this.sendEvent(neuronId, 1000);
-            }
-        },
+			var neuronId = parseInt(evt.model.i);
+			var active = btn.active;
+			
+			if (this.toggle) {
+				this.send(neuronId, active ? 1 : 0);
+			} else {
+				this.sendEvent(neuronId, 1000);
+			}
+		},
 
-        computeDisabled: function (state) {
-            return state === 'disconnected';
-        },
+		computeDisabled: function (state) {
+			return state === 'disconnected';
+		},
 
-        computeActive: function (i) {
-            return this.neuronValues[i] ? true : false;
-        },
-
-        computeIf: function (neuronValues) {
-            return neuronValues.length > 1;
-        }
-    });
+		computeActive: function (i) {
+			return this.neuronValues[i] ? true : false;
+		},
+		
+		computeLabel: function (i) {
+			return (this.label || '') + (this.neuronValues.length > 1 ? ' '+i : '');  
+		}
+	});
 </script>
