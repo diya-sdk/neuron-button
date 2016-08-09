@@ -27,11 +27,15 @@
 				background-color: rgba(0,0,0,0.25);
 			}
 
+			:host paper-button.highlighted {
+				background: rgb(1,145,197);
+			}
+
 
 		</style>
   <template>
 		<template is="dom-repeat" items="{{neuronValues}}" as="value" index-as="i">
-			<paper-button class="{{state}}" toggles="{{toggle}}" disabled="{{computeDisabled(state)}}" neuron-id="{{i}}" active?="{{computeActive(i)}}" on-tap="actionTapped">{{computeLabel(i)}}</paper-button>
+			<paper-button class$="{{computeBtnClass(state, i, highlightedId)}}" toggles="{{toggle}}" disabled="{{computeDisabled(state)}}" neuron-id="{{i}}" active?="{{computeActive(i)}}" on-tap="actionTapped">{{computeLabel(i)}}</paper-button>
 		</template>
 
 		<shadow></shadow>
@@ -44,6 +48,7 @@
 		properties: {
 			label: { notify: true },
 			toggle: { type: Boolean, value: false, notify: true },
+			highlightedId: { type: Number, value: -1, notify: false }
 		},
 		
 		ready: function () {
@@ -76,6 +81,10 @@
 		
 		computeLabel: function (i) {
 			return (this.label || '') + (this.neuronValues.length > 1 ? ' '+i : '');  
+		}, 
+
+		computeBtnClass: function(state, selectedBtn, highlightedId) {
+			return state + (selectedBtn === this.highlightedId ? ' highlighted' : '');
 		}
 	});
 </script>
