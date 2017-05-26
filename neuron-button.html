@@ -2,7 +2,8 @@
 <link rel="import" href="../paper-button/paper-button.html">
 
 <dom-module id="neuron-button">
-  <style>
+	<template>
+		<style>
 			:host{
 				display: flex;
 			}
@@ -33,7 +34,7 @@
 
 
 		</style>
-  <template>
+
 		<template is="dom-repeat" items="{{neuronValues}}" as="value" index-as="i">
 			<paper-button class$="{{computeBtnClass(state, i, highlightedId)}}" toggles="{{toggle}}" disabled="{{computeDisabled(state)}}" neuron-id="{{i}}" active?="{{computeActive(i)}}" on-tap="actionTapped">{{computeLabel(i)}}</paper-button>
 		</template>
@@ -50,7 +51,7 @@
 			toggle: { type: Boolean, value: false, notify: true },
 			highlightedId: { type: Number, value: -1, notify: false }
 		},
-		
+
 		ready: function () {
 		},
 
@@ -63,7 +64,7 @@
 
 			var neuronId = parseInt(evt.model.i);
 			var active = btn.active;
-			
+
 			if (this.toggle) {
 				this.send(neuronId, active ? 1 : 0);
 			} else {
@@ -78,7 +79,7 @@
 		computeActive: function (i) {
 			return this.neuronValues[i] ? true : false;
 		},
-		
+
 		computeLabel: function (i) {
 			return (this.label || '') + (this.neuronValues.length > 1 ? ' '+i : '');  
 		}, 
