@@ -56,20 +56,22 @@
 		},
 
 		actionTapped: function (evt) {
-			if (!this.neuron) return;
+			this.async(function() {
+				if (!this.neuron) return;
 
-			var i = 0;
-			while(evt.path[i].nodeName !== 'PAPER-BUTTON') i++;
-			var btn = evt.path[i];
+				var i = 0;
+				while(evt.path[i].nodeName !== 'PAPER-BUTTON') i++;
+				var btn = evt.path[i];
 
-			var neuronId = parseInt(evt.model.i);
-			var active = btn.active;
+				var neuronId = parseInt(evt.model.i);
+				var active = btn.active;
 
-			if (this.toggle) {
-				this.send(neuronId, active ? 1 : 0);
-			} else {
-				this.sendEvent(neuronId, 1000);
-			}
+				if (this.toggle) {
+					this.send(neuronId, active ? 1 : 0);
+				} else {
+					this.sendEvent(neuronId, 1000);
+				}
+			})
 		},
 
 		computeDisabled: function (state) {
